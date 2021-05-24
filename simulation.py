@@ -4,21 +4,23 @@ from helpers import *
 
 
 
-n = int(1e8)
+n = int(1e9)
 t = 1e-2### cm
 h = 100 ### cm
 d = 10  ### cm
 En = 1 #MeV
 collimator_x_width = 20 
 target_density = 0.93 * (6.022e23)/(28)    ###g/cm**3
-do_landau_smearing = True
-detector_smearing = 0.02
+
+do_energy_loss = True
+do_landau_smearing = False
+detector_smearing = 0.001
 
 print("d/h: ", d/h)
-print("Thickness: ", t)
+print("Thickness(cm): ", t)
 print("N neutrons generated: ", n)
-print("Neutron energy: ", En)
-print("Detector energy resolution: ", detector_smearing)
+print("Neutron energy(MeV): ", En)
+print("Detector energy resolution(MeV): ", detector_smearing)
 
 print("--------------------------")
 
@@ -29,7 +31,7 @@ cross_section_H = find_closer_cross_section(En, cross_section_H_array)
 cross_section_C = find_closer_cross_section(En, cross_section_C_array)
 mu = compute_mu(cross_section_H, cross_section_C, target_density)
 free_paths = -np.log(np.random.rand(n))/mu
-print("Mean free path: ", np.mean(free_paths))
+print("Mean free path (cm): ", np.mean(free_paths))
 
 
 x_coord = collimator_x_width*np.random.rand(n) - collimator_x_width/2
@@ -72,8 +74,14 @@ print("Max tan: ", np.max(np.tan(scattered_proton_theta[is_proton_detected])))
 print("N protons detected (before energy loss correction): ", len(scattered_proton_theta[is_proton_detected]))
 print("--------------------------")
 
-mpv_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
-fwhm_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
+if do_energy_loss==True:
+    mpv_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
+    fwhm_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
+
+else:
+    mpv_energy_loss = np.zeros(len(scattered_proton_energy[is_proton_detected]))
+    fwhm_energy_loss = np.zeros(len(scattered_proton_energy[is_proton_detected]))
+    do_landau_smearing = False
 
 energy_loss = mpv_energy_loss
 if do_landau_smearing:
