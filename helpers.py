@@ -34,8 +34,8 @@ def compute_theta(n_protons, is_h_scattered):
 def compute_energy_loss(scattered_proton_energy, thickness, scat_y, theta):
     sqr = lambda x: x*x
     rho = 0.93 #g/cm**3
-    Z = (4*1 + 6*2)/3
-    A = (4*1 + 2*12)/3
+    Z = (4*1 + 6*2)/10
+    A = (4*1 + 2*12)/10
     proton_path = (thickness-scat_y)/np.abs(np.cos(theta)) #cm
 
     M = 939 # Mass of heavy particle in MeV
