@@ -6,12 +6,13 @@ import time
 
 start_time = time.time()
 
+test_mode = True
 
-n = int(1e9)
-t_list = [1e-4, 1e-3, 1e-2, 1e-1] #cm
+n = int(1e9) if not test_mode else int(1e8)
+t_list = [1e-4, 1e-3, 1e-2, 1e-1] if not test_mode else [1e-2] #cm
 h = 10 ### cm  
-d_list = [1, 0.1, 0.01]  ### cm 
-En_list = [1, 2, 5] #MeV
+d_list = [1, 0.1, 0.01] if not test_mode else [1] ### cm 
+En_list = [1, 2, 5] if not test_mode else [1] #MeV
 
 target_density = 0.93 * (6.022e23)/(28)    ###g/cm**3
 
@@ -52,8 +53,14 @@ for t in t_list:
             prob_h_scat = 4*cross_section_H/(4*cross_section_H + 2*cross_section_C)
             prob_c_scat = 1-prob_h_scat
             is_h_scattering = np.random.rand(n_protons) <= prob_h_scat
-            scattered_proton_theta = compute_theta(n_protons, is_h_scattering)
-            scattered_proton_energy = En*np.cos(scattered_proton_theta)**2
+            scattered_proton_theta, scattered_proton_energy = compute_theta_and_energy(n_protons, En, is_h_scattering)
+            plt.hist(scattered_proton_energy, bins=200)
+            plt.savefig("en.png")
+            plt.figure()
+            plt.hist(scattered_proton_theta, bins=200)
+            plt.savefig("theta.png")
+
+
 
             is_proton_detected = np.zeros(n_protons, dtype=bool)
             for index in range(n_protons):

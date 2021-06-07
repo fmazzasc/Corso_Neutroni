@@ -18,18 +18,37 @@ def compute_mu(cross_section_H, cross_section_C, target_density):
     return mu
 
 
-def compute_theta(n_protons, is_h_scattered):
-    phi = 2*np.pi*np.random.rand(n_protons)
+def compute_theta_and_energy(n_protons, E_neutr, is_h_scattered):
+    cos_phi = 2*np.random.rand(n_protons) -1
     is_positive = np.random.rand(n_protons)
     theta = np.ones(n_protons)
+    energy = np.ones(n_protons)
     for index in range(len(theta)):
+        A=12
+        # if is_h_scattered[index]==False:
+        #     A=12
+        cos_theta = (A*cos_phi[index] + 1)/np.sqrt(A**2 + 2*A*cos_phi[index] + 1)
+        theta[index] = np.arccos(cos_theta)
+        theta[index] = theta[index] if is_positive[index]<0.5 else -theta[index]
+        energy[index] = 4*A/((1+A)**2)*cos_theta**2*E_neutr
+    return theta, energy
+
+
+def compute_energy_and_theta(n_protons, E_neutr, is_h_scattered):
+    is_positive = np.random.rand(n_protons)
+    theta = np.ones(n_protons)
+    energy = np.ones(n_protons)
+    for index in range(len(theta)):
+        # is_h_scattered[index] = False
         A=1
         if is_h_scattered[index]==False:
             A=12
-        
-        theta[index] = np.arccos((A*np.cos(phi[index]) + 1)/np.sqrt(A**2 + 2*A*np.cos(phi[index]) + 1))
-        theta[index] = theta[index] if is_positive[index]<0.5 else -theta[index]
-    return theta
+        energy[index] = np.random.rand()*E_neutr*(4*A/(1+A)**2)
+        theta[index] = np.arccos(np.sqrt(energy[index]/(4*A/(1+A)**2)/E_neutr))
+        # theta[index] = theta[index] if is_positive[index]<0.5 else -theta[index]
+    return theta, energy
+
+
 
 def compute_energy_loss(scattered_proton_energy, thickness, scat_y, theta):
     sqr = lambda x: x*x

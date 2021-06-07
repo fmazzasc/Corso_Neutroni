@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 
 files = os.listdir("result_arrays/")
 h=10 #cm
+
 eff_arr_1 = []
 eff_arr_2 = []
 eff_arr_5 = []
-
 d_arr_1 = []
 d_arr_2 = []
 d_arr_5 = []
