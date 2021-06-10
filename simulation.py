@@ -6,18 +6,19 @@ import time
 
 start_time = time.time()
 
-test_mode = True
+test_mode = False
 
-n = int(1e9) if not test_mode else int(1e8)
+n = int(1e9) if not test_mode else int(1e9)
 t_list = [1e-4, 1e-3, 1e-2, 1e-1] if not test_mode else [1e-2] #cm
 h = 10 ### cm  
 d_list = [1, 0.1, 0.01] if not test_mode else [1] ### cm 
-En_list = [1, 2, 5] if not test_mode else [1] #MeV
+En_list = [1, 2, 5] if not test_mode else [5] #MeV
 
 target_density = 0.93 * (6.022e23)/(28)    ###g/cm**3
 
 do_energy_loss = True
-do_landau_smearing = True
+do_exp_energy_loss = True
+do_landau_smearing = False if do_exp_energy_loss else True
 detector_smearing = 0.01
 
 counter = 1
@@ -54,12 +55,14 @@ for t in t_list:
             prob_c_scat = 1-prob_h_scat
             is_h_scattering = np.random.rand(n_protons) <= prob_h_scat
             scattered_proton_theta, scattered_proton_energy = compute_theta_and_energy(n_protons, En, is_h_scattering)
-            plt.hist(scattered_proton_energy, bins=200)
-            plt.savefig("en.png")
             plt.figure()
-            plt.hist(scattered_proton_theta, bins=200)
+            plt.hist(scattered_proton_theta, bins=100)
             plt.savefig("theta.png")
-
+            plt.close()
+            plt.figure()
+            plt.hist(scattered_proton_energy, bins=100)
+            plt.savefig("en.png")
+            plt.close()
 
 
             is_proton_detected = np.zeros(n_protons, dtype=bool)
@@ -83,14 +86,22 @@ for t in t_list:
                     if -(d/2 + scat_x)/(h+t-scat_y)<np.tan(scat_theta)<-(scat_x - d/2)/(t - scat_y):
                         is_proton_detected[index] = 1
                     continue
-
+            if np.sum(is_proton_detected)==0:
+                print("No protons detected, moving to next run")
+                continue
             print("Max tan: ", np.max(np.tan(scattered_proton_theta[is_proton_detected])))
             print("N protons detected (before energy loss correction): ", len(scattered_proton_theta[is_proton_detected]))
             print("--------------------------")
 
             if do_energy_loss==True:
-                mpv_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
-                fwhm_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[1]
+                if do_exp_energy_loss==False:
+                    mpv_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[0]
+                    fwhm_energy_loss = compute_energy_loss(scattered_proton_energy[is_proton_detected], t, scattered_proton_y[is_proton_detected], scattered_proton_theta[is_proton_detected])[1]
+                else:
+                    proton_path = (t-scattered_proton_y[is_proton_detected])/np.abs(np.cos(scattered_proton_theta[is_proton_detected]))
+                    data = np.loadtxt("Stopping_power.txt")
+                    stopping_power = find_closer_stopping_power(scattered_proton_energy[is_proton_detected], data)
+                    mpv_energy_loss = stopping_power*0.93*proton_path
 
             else:
                 mpv_energy_loss = np.zeros(len(scattered_proton_energy[is_proton_detected]))
@@ -102,7 +113,6 @@ for t in t_list:
                 for index in range(len(mpv_energy_loss)):
                     energy_loss[index] = landau_smearing(mpv_energy_loss[index], fwhm_energy_loss[index])
             print("Mean energy loss: ", np.mean(energy_loss))
-
             proton_final_energy = scattered_proton_energy[is_proton_detected] - energy_loss
             proton_final_energy = proton_final_energy[proton_final_energy>0]
 

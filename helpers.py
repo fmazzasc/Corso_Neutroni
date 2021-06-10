@@ -11,6 +11,16 @@ def find_closer_cross_section(En, en_cross_section_array):
     min_index = np.argmin(diff_array)
     return cross_section_array[min_index]
 
+def find_closer_stopping_power(Ep_array, stopping_power):
+    stopping_power_array = np.ones(len(Ep_array))
+    energy_array = stopping_power[:,0]
+    stopping_power = stopping_power[:,1]
+    for index, Ep in enumerate(Ep_array): 
+        diff_array = np.abs(energy_array  - Ep)
+        min_index = np.argmin(diff_array)
+        stopping_power_array[index] = stopping_power[min_index]
+    return stopping_power_array
+
 def compute_mu(cross_section_H, cross_section_C, target_density):
     cross_section_H = cross_section_H *10**(-24)
     cross_section_C = cross_section_C *10**(-24)
@@ -22,12 +32,14 @@ def compute_theta_and_energy(n_protons, E_neutr, is_h_scattered):
     cos_phi = 2*np.random.rand(n_protons) -1
     is_positive = np.random.rand(n_protons)
     theta = np.ones(n_protons)
+    cos_th = np.ones(n_protons)
     energy = np.ones(n_protons)
     for index in range(len(theta)):
-        A=12
-        # if is_h_scattered[index]==False:
-        #     A=12
+        A = 1
+        if is_h_scattered[index]==False:
+            A=1
         cos_theta = (A*cos_phi[index] + 1)/np.sqrt(A**2 + 2*A*cos_phi[index] + 1)
+        cos_th[index] = cos_theta
         theta[index] = np.arccos(cos_theta)
         theta[index] = theta[index] if is_positive[index]<0.5 else -theta[index]
         energy[index] = 4*A/((1+A)**2)*cos_theta**2*E_neutr
