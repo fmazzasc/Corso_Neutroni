@@ -37,7 +37,7 @@ def compute_theta_and_energy(n_protons, E_neutr, is_h_scattered):
     for index in range(len(theta)):
         A = 1
         if is_h_scattered[index]==False:
-            A=1
+            A=12
         cos_theta = (A*cos_phi[index] + 1)/np.sqrt(A**2 + 2*A*cos_phi[index] + 1)
         cos_th[index] = cos_theta
         theta[index] = np.arccos(cos_theta)

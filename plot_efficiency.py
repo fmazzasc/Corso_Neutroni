@@ -66,7 +66,7 @@ plt.legend(title=r'$\bf{{{}}}$'.format(title_string.replace(' ', r'\;')), fancyb
 plt.xlabel("h/d (cm)", fontsize=13)
 plt.ylabel(r"# Protons / Collimator Area (cm$^{-2}$)", fontsize=13)
 
-plt.savefig(f"result_plots/efficiency_t_{thick}.png")
+plt.savefig(f"result_plots/efficiency_t_{thick}.png", bbox_inches="tight")
 # fig = plt.figure()
 # ax = fig.add_subplot()
 # ax.plot()
