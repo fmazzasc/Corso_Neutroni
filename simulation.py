@@ -12,7 +12,7 @@ n = int(1e9) if not test_mode else int(1e9)
 t_list = [1e-4, 1e-3, 1e-2, 1e-1] if not test_mode else [1e-2] #cm
 h = 10 ### cm  
 d_list = [1, 0.1, 0.01] if not test_mode else [1] ### cm 
-En_list = [1, 2, 5] if not test_mode else [5] #MeV
+En_list = [1, 2, 5] if not test_mode else [2] #MeV
 
 target_density = 0.93 * (6.022e23)/(28)    ###g/cm**3
 
@@ -39,6 +39,7 @@ for t in t_list:
             cross_section_C_array = np.loadtxt("cross_sections/C.txt")
             cross_section_H = find_closer_cross_section(En, cross_section_H_array)
             cross_section_C = find_closer_cross_section(En, cross_section_C_array)
+            cross_section_C = 0
             mu = compute_mu(cross_section_H, cross_section_C, target_density)
             free_paths = -np.log(np.random.rand(n))/mu
             print("Mean free path (cm): ", np.mean(free_paths))
@@ -55,14 +56,14 @@ for t in t_list:
             prob_c_scat = 1-prob_h_scat
             is_h_scattering = np.random.rand(n_protons) <= prob_h_scat
             scattered_proton_theta, scattered_proton_energy = compute_theta_and_energy(n_protons, En, is_h_scattering)
-            plt.figure()
-            plt.hist(scattered_proton_theta, bins=100)
-            plt.savefig("theta.png")
-            plt.close()
-            plt.figure()
-            plt.hist(scattered_proton_energy, bins=100)
-            plt.savefig("en.png")
-            plt.close()
+            # plt.figure()
+            # plt.hist(scattered_proton_theta, bins=100)
+            # plt.savefig("theta.png")
+            # plt.close()
+            # plt.figure()
+            # plt.hist(scattered_proton_energy, bins=100)
+            # plt.savefig("en.png")
+            # plt.close()
 
 
             is_proton_detected = np.zeros(n_protons, dtype=bool)
