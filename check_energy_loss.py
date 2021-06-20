@@ -28,8 +28,8 @@ for index in range(len(energy_loss_theory)):
     energy_loss_theory_landau[index] = landau_smearing(energy_loss_theory_landau[index], fwhm_theory[index])
 
 plt.plot(energy, energy_loss_exp, "r-", label="Experimental")
-plt.plot(energy, energy_loss_theory_landau, "b--", label="Bethe-Bloch + Landau smearing theory")
-plt.plot(energy, energy_loss_theory, "g-", label="Bethe-Bloch theory")
+plt.plot(energy, energy_loss_theory_landau, "b--", label="Landau-Vavilov theory + smearing")
+plt.plot(energy, energy_loss_theory, "g-", label="Landau-Vavilov theory")
 plt.xlabel("Proton energy (MeV)", fontsize=12)
 plt.ylabel(f"Energy loss in {thick} cm (Polyethilene)", fontsize=12)
 plt.yscale("log")
