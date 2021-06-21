@@ -33,7 +33,7 @@ for file in files:
 
         else:
             print("E: ", E, "d: ", d, "t: ", thick)
-            eff_arr_5.append(len(arr)/(d*np.pi**2))
+            eff_arr_5.append(len(arr)/(d))
             d_arr_5.append(h/d)
 
 
@@ -65,6 +65,6 @@ plt.plot(d_arr_5, eff_arr_5,  ".-", label = "Neutron Energy = 5 MeV")
 title_string = f"Thickness: {thickness} cm"
 plt.legend(title=r'$\bf{{{}}}$'.format(title_string.replace(' ', r'\;')), fancybox=True)
 plt.xlabel("h/d (cm)", fontsize=13)
-plt.ylabel(r"# Protons / Collimator Area (cm$^{-2}$)", fontsize=13)
+plt.ylabel(r"# Protons / Collimator Length (cm$^{-1}$)", fontsize=13)
 
 plt.savefig(f"result_plots/efficiency_t_{thickness}.png", bbox_inches="tight")
