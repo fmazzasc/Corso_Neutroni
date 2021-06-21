@@ -3,7 +3,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-thickness = 1e-4
+thickness = 1e-1
 
 files = os.listdir("result_arrays/")
 h=10 #cm
